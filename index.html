@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système RPG - Productivité</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Palette de couleurs */
+            --bg-primary: #0A0F1E;
+            --bg-secondary: #0A1428;
+            --bg-card: rgba(15, 25, 50, 0.7);
+            --accent-blue: #00C6FF;
+            --accent-blue-dark: #0072FF;
+            --urgent-red: #FF375F;
+            --success-green: #00FF88;
+            --warning-yellow: #FFD700;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0C0;
+            --text-dim: #6B7280;
+            --border-glow: rgba(0, 198, 255, 0.5);
+            --border-glow-strong: rgba(0, 198, 255, 0.8);
+            --transparent-overlay: rgba(10, 20, 40, 0.9);
+            
+            /* Effets */
+            --shadow-glow: 0 0 15px rgba(0, 198, 255, 0.3);
+            --shadow-glow-strong: 0 0 25px rgba(0, 198, 255, 0.5);
+            --shadow-red: 0 0 15px rgba(255, 55, 95, 0.4);
+            --shadow-green: 0 0 15px rgba(0, 255, 136, 0.4);
+            
+            /* Bordures */
+            --border-radius: 4px;
+            --border-radius-lg: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1A1F3E 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 114, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 198, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 55, 95, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Conteneur principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* En-tête avec navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(0, 198, 255, 0.2);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        /* Navigation par onglets */
+        .nav-tabs {
+            display: flex;
+            gap: 5px;
+            background: rgba(10, 20, 40, 0.7);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: var(--border-radius);
+            padding: 5px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+            background: rgba(0, 198, 255, 0.1);
+        }
+
+        .tab.active {
+            background: rgba(0, 198, 255, 0.2);
+            color: var(--accent-blue);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Section principale - Tableau de bord */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Carte de profil */
+        .profile-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--border-radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-dark));
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .player-info h2 {
+            color: var(--accent-blue);
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .player-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Jauges de statut */
+        .status-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .status-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .status-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .status-name {
+            color: var(--text-secondary);
+        }
+
+        .status-value {
+            font-weight: 600;
+        }
+
+        .bar-container {
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bar {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .hp-bar {
+            background: linear-gradient(90deg, var(--success-green), #00CC66);
+            box-shadow: var(--shadow-green);
+        }
+
+        .mp-bar {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-dark));
+            box-shadow: var(--shadow-glow);
+        }
+
+        .xp-bar {
+            background: linear-gradient(90deg, var(--warning-yellow), #FFAA00);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Section des quêtes */
+        .quests-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--border-radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quests-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-dark));
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-title i {
+            font-size: 1.2rem;
+        }
+
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .quest-item {
+            background: rgba(20, 30, 60, 0.5);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            border-left: 3px solid var(--accent-blue);
+            transition: all 0.3s ease;
+        }
+
+        .quest-item:hover {
+            background: rgba(20, 30, 60, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .quest-item.urgent {
+            border-left-color: var(--urgent-red);
+            box-shadow: var(--shadow-red);
+        }
+
+        .quest-item.completed {
+            border-left-color: var(--success-green);
+            box-shadow: var(--shadow-green);
+        }
+
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .quest-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .quest-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--accent-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quest-checkbox.checked {
+            background: var(--success-green);
+            border-color: var(--success-green);
+        }
+
+        .quest-checkbox.checked i {
+            color: var(--bg-primary);
+            font-size: 0.7rem;
+        }
+
+        .quest-checkbox.urgent {
+            border-color: var(--urgent-red);
+        }
+
+        .quest-timer {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--urgent-red);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .quest-details {
+            margin-left: 28px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .quest-reward {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 8px;
+            color: var(--success-green);
+            font-size: 0.85rem;
+        }
+
+        /* Grille d'inventaire */
+        .inventory-section {
+            margin-bottom: 30px;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .inventory-item {
+            aspect-ratio: 1;
+            background: rgba(20, 30, 60, 0.5);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .inventory-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--accent-blue);
+        }
+
+        .inventory-item i {
+            font-size: 1.8rem;
+            color: var(--accent-blue);
+        }
+
+        .inventory-item span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* Fenêtre modale */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--border-radius-lg);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-glow-strong);
+            animation: modalAppear 0.4s ease;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-dark));
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 198, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header i {
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+        }
+
+        .modal-title {
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .modal-body {
+            padding: 20px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            border-top: 1px solid rgba(0, 198, 255, 0.2);
+        }
+
+        /* Boutons */
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-accept {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-dark));
+            color: white;
+        }
+
+        .btn-accept:hover {
+            box-shadow: var(--shadow-glow-strong);
+        }
+
+        .btn-decline {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-decline:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+        }
+
+        .btn-level-up {
+            background: linear-gradient(135deg, var(--success-green), #00CC66);
+            color: var(--bg-primary);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 12px 30px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+        }
+
+        /* Notification Level Up */
+        .level-up-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--success-green);
+            border-radius: var(--border-radius-lg);
+            padding: 30px 50px;
+            z-index: 1001;
+            text-align: center;
+            box-shadow: var(--shadow-green);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .level-up-notification.active {
+            opacity: 1;
+            animation: levelUpAnimation 2s ease;
+        }
+
+        @keyframes levelUpAnimation {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            40% { transform: translate(-50%, -50%) scale(1); }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .level-up-text {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--success-green);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+            margin-bottom: 10px;
+        }
+
+        .level-up-details {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 0;
+            }
+            
+            .nav-tabs {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .dashboard {
+                gap: 20px;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête avec navigation -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-gamepad"></i>
+                <span>Système RPG</span>
+            </div>
+            
+            <div class="nav-tabs">
+                <button class="tab active" data-tab="dashboard">
+                    <i class="fas fa-home"></i> Tableau de bord
+                </button>
+                <button class="tab" data-tab="inventory">
+                    <i class="fas fa-archive"></i> Inventaire
+                </button>
+                <button class="tab" data-tab="quests">
+                    <i class="fas fa-tasks"></i> Quêtes
+                </button>
+                <button class="tab" data-tab="shop">
+                    <i class="fas fa-store"></i> Boutique
+                </button>
+                <button class="tab" data-tab="stats">
+                    <i class="fas fa-chart-line"></i> Stats
+                </button>
+            </div>
+        </header>
+
+        <!-- Section principale -->
+        <main>
+            <!-- Tableau de bord -->
+            <section id="dashboard" class="tab-content active">
+                <div class="dashboard">
+                    <!-- Profil et jauges -->
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="player-info">
+                                <h2>Joueur: Alex</h2>
+                                <p>Niveau: <span class="highlight">12</span></p>
+                         
