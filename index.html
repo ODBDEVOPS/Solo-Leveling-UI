@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système RPG - Productivité</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Palette de couleurs */
+            --bg-primary: #0A0F1E;
+            --bg-secondary: #0A1428;
+            --bg-card: rgba(15, 25, 50, 0.7);
+            --accent-blue: #00C6FF;
+            --accent-blue-dark: #0072FF;
+            --urgent-red: #FF375F;
+            --success-green: #00FF88;
+            --warning-yellow: #FFD700;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0C0;
+            --text-dim: #6B7280;
+            --border-glow: rgba(0, 198, 255, 0.5);
+            --border-glow-strong: rgba(0, 198, 255, 0.8);
+            --transparent-overlay: rgba(10, 20, 40, 0.9);
+            
+            /* Effets */
+            --shadow-glow: 0 0 15px rgba(0, 198, 255, 0.3);
+            --shadow-glow-strong: 0 0 25px rgba(0, 198, 255, 0.5);
+            --shadow-red: 0 0 15px rgba(255, 55, 95, 0.4);
+            --shadow-green: 0 0 15px rgba(0, 255, 136, 0.4);
+            
+            /* Bordures */
+            --border-radius: 4px;
+            --border-radius-lg: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1A1F3E 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 114, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 198, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 55, 95, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Conteneur principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* En-tête avec navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(0, 198, 255, 0.2);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        /* Navigation par onglets */
+        .nav-tabs {
+            display: flex;
+            gap: 5px;
+            background: rgba(10, 20, 40, 0.7);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: var(--border-radius);
+            padding: 5px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+            background: rgba(0, 198, 255, 0.1);
+        }
+
+        .tab.active {
+            background: rgba(0, 198, 255, 0.2);
+            color: var(--accent-blue);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Section principale - Tableau de bord */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Carte de profil */
+        .profile-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--border-radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-dark));
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .player-info h2 {
+            color: var(--accent-blue);
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .player-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Jauges de statut */
+        .status-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .status-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .status-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .status-name {
+            color: var(--text-secondary);
+        }
+
+        .status-value {
+            font-weight: 600;
+        }
+
+        .bar-container {
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bar {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .hp-bar {
+            background: linear-gradient(90deg, var(--success-green), #00CC66);
+            box-shadow: var(--shadow-green);
+        }
+
+        .mp-bar {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-dark));
+            box-shadow: var(--shadow-glow);
+        }
+
+        .xp-bar {
+            background: linear-gradient(90deg, var(--warning-yellow), #FFAA00);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Section des quêtes */
+        .quests-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--border-radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quests-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-dark));
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-title i {
+            font-size: 1.2rem;
+        }
+
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .quest-item {
+            background: rgba(20, 30, 60, 0.5);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            border-left: 3px solid var(--accent-blue);
+            transition: all 0.3s ease;
+        }
+
+        .quest-item:hover {
+            background: rgba(20, 30, 60, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .quest-item.urgent {
+            border-left-color: var(--urgent-red);
+            box-shadow: var(--shadow-red);
+        }
+
+        .quest-item.completed {
+            border-left-color: var(--success-green);
+            box-shadow: var(--shadow-green);
+        }
+
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .quest-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .quest-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--accent-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quest-checkbox.checked {
+            background: var(--success-green);
+            border-color: var(--success-green);
+        }
+
+        .quest-checkbox.checked i {
+            color: var(--bg-primary);
+            font-size: 0.7rem;
+        }
+
+        .quest-checkbox.urgent {
+            border-color: var(--urgent-red);
+        }
+
+        .quest-timer {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--urgent-red);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .quest-details {
+            margin-left: 28px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .quest-reward {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 8px;
+            color: var(--success-green);
+            font-size: 0.85rem;
+        }
+
+        /* Grille d'inventaire */
+        .inventory-section {
+            margin-bottom: 30px;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .inventory-item {
+            aspect-ratio: 1;
+            background: rgba(20, 30, 60, 0.5);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .inventory-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--accent-blue);
+        }
+
+        .inventory-item i {
+            font-size: 1.8rem;
+            color: var(--accent-blue);
+        }
+
+        .inventory-item span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* Fenêtre modale */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--border-radius-lg);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-glow-strong);
+            animation: modalAppear 0.4s ease;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-dark));
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 198, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header i {
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+        }
+
+        .modal-title {
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .modal-body {
+            padding: 20px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            border-top: 1px solid rgba(0, 198, 255, 0.2);
+        }
+
+        /* Boutons */
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-accept {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-dark));
+            color: white;
+        }
+
+        .btn-accept:hover {
+            box-shadow: var(--shadow-glow-strong);
+        }
+
+        .btn-decline {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-decline:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+        }
+
+        .btn-level-up {
+            background: linear-gradient(135deg, var(--success-green), #00CC66);
+            color: var(--bg-primary);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 12px 30px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+        }
+
+        /* Notification Level Up */
+        .level-up-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--success-green);
+            border-radius: var(--border-radius-lg);
+            padding: 30px 50px;
+            z-index: 1001;
+            text-align: center;
+            box-shadow: var(--shadow-green);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .level-up-notification.active {
+            opacity: 1;
+            animation: levelUpAnimation 2s ease;
+        }
+
+        @keyframes levelUpAnimation {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            40% { transform: translate(-50%, -50%) scale(1); }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .level-up-text {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--success-green);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+            margin-bottom: 10px;
+        }
+
+        .level-up-details {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 0;
+            }
+            
+            .nav-tabs {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .dashboard {
+                gap: 20px;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête avec navigation -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-gamepad"></i>
+                <span>Système RPG</span>
+            </div>
+            
+            <div class="nav-tabs">
+                <button class="tab active" data-tab="dashboard">
+                    <i class="fas fa-home"></i> Tableau de bord
+                </button>
+                <button class="tab" data-tab="inventory">
+                    <i class="fas fa-archive"></i> Inventaire
+                </button>
+                <button class="tab" data-tab="quests">
+                    <i class="fas fa-tasks"></i> Quêtes
+                </button>
+                <button class="tab" data-tab="shop">
+                    <i class="fas fa-store"></i> Boutique
+                </button>
+                <button class="tab" data-tab="stats">
+                    <i class="fas fa-chart-line"></i> Stats
+                </button>
+            </div>
+        </header>
+
+        <!-- Section principale -->
+        <main>
+            <!-- Tableau de bord -->
+            <section id="dashboard" class="tab-content active">
+                <div class="dashboard">
+                    <!-- Profil et jauges -->
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="player-info">
+                                <h2>Joueur: Alex</h2>
+                                <p>Niveau: <span class="highlight">12</span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="status-bars">
+                            <div class="status-bar">
+                                <div class="status-label">
+                                    <span class="status-name">HP (Productivité)</span>
+                                    <span class="status-value">82%</span>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar hp-bar" style="width: 82%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="status-bar">
+                                <div class="status-label">
+                                    <span class="status-name">MP (Énergie)</span>
+                                    <span class="status-value">40%</span>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar mp-bar" style="width: 40%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="status-bar">
+                                <div class="status-label">
+                                    <span class="status-name">XP (Progression)</span>
+                                    <span class="status-value">75%</span>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar xp-bar" style="width: 75%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quêtes du jour -->
+                    <div class="quests-card">
+                        <div class="section-title">
+                            <i class="fas fa-scroll"></i>
+                            <h3>Quêtes du jour</h3>
+                        </div>
+                        
+                        <div class="quest-list">
+                            <!-- Quête 1 -->
+                            <div class="quest-item" id="quest1">
+                                <div class="quest-header">
+                                    <div class="quest-title">
+                                        <div class="quest-checkbox" data-quest="quest1">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <span>Répondre aux emails urgents</span>
+                                    </div>
+                                    <div class="quest-timer">
+                                        <i class="fas fa-clock"></i>
+                                        <span>2h restantes</span>
+                                    </div>
+                                </div>
+                                <div class="quest-details">
+                                    <p>Traiter les emails marqués comme urgents dans la boîte de réception.</p>
+                                    <div class="quest-reward">
+                                        <i class="fas fa-coins"></i>
+                                        <span>Récompense: +50 XP</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Quête 2 -->
+                            <div class="quest-item completed" id="quest2">
+                                <div class="quest-header">
+                                    <div class="quest-title">
+                                        <div class="quest-checkbox checked" data-quest="quest2">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <span>Préparer présentation client</span>
+                                    </div>
+                                </div>
+                                <div class="quest-details">
+                                    <p>Finaliser la présentation pour la réunion de demain.</p>
+                                    <div class="quest-reward">
+                                        <i class="fas fa-gem"></i>
+                                        <span>Récompense: +120 XP & Potion d'énergie</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Quête 3 (Urgente) -->
+                            <div class="quest-item urgent" id="quest3">
+                                <div class="quest-header">
+                                    <div class="quest-title">
+                                        <div class="quest-checkbox urgent" data-quest="quest3">
+                                            <i class="fas fa-exclamation"></i>
+                                        </div>
+                                        <span>Réunion d'équipe (URGENT)</span>
+                                    </div>
+                                    <div class="quest-timer">
+                                        <i class="fas fa-clock"></i>
+                                        <span>30min restantes</span>
+                                    </div>
+                                </div>
+                                <div class="quest-details">
+                                    <p>Participer à la réunion d'équipe mensuelle. Présenter les résultats du trimestre.</p>
+                                    <div class="quest-reward">
+                                        <i class="fas fa-coins"></i>
+                                        <span>Récompense: +200 XP</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Inventaire (grille) -->
+                <div class="inventory-section">
+                    <div class="section-title">
+                        <i class="fas fa-box-open"></i>
+                        <h3>Inventaire</h3>
+                    </div>
+                    
+                    <div class="inventory-grid">
+                        <div class="inventory-item">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Documents</span>
+                        </div>
+                        <div class="inventory-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Énergie</span>
+                        </div>
+                        <div class="inventory-item">
+                            <i class="fas fa-trophy"></i>
+                            <span>Récompenses</span>
+                        </div>
+                        <div class="inventory-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Protection</span>
+                        </div>
+                        <div class="inventory-item">
+                            <i class="fas fa-flask"></i>
+                            <span>Potions</span>
+                        </div>
+                        <div class="inventory-item">
+                            <i class="fas fa-map"></i>
+                            <span>Cartes</span>
+                        </div>
+                        <div class="inventory-item">
+                            <i class="fas fa-plus"></i>
+                            <span>Vide</span>
+                        </div>
+                        <div class="inventory-item">
+                            <i class="fas fa-plus"></i>
+                            <span>Vide</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Autres sections (initialement cachées) -->
+            <section id="inventory" class="tab-content">
+                <div class="quests-card">
+                    <div class="section-title">
+                        <i class="fas fa-archive"></i>
+                        <h3>Inventaire complet</h3>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-top: 20px; text-align: center;">
+                        Cette section affichera l'inventaire complet de l'utilisateur.
+                    </p>
+                </div>
+            </section>
+            
+            <section id="quests" class="tab-content">
+                <div class="quests-card">
+                    <div class="section-title">
+                        <i class="fas fa-tasks"></i>
+                        <h3>Toutes les quêtes</h3>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-top: 20px; text-align: center;">
+                        Cette section affichera toutes les quêtes disponibles et en cours.
+                    </p>
+                </div>
+            </section>
+            
+            <section id="shop" class="tab-content">
+                <div class="quests-card">
+                    <div class="section-title">
+                        <i class="fas fa-store"></i>
+                        <h3>Boutique</h3>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-top: 20px; text-align: center;">
+                        Cette section affichera la boutique avec des objets à acheter.
+                    </p>
+                </div>
+            </section>
+            
+            <section id="stats" class="tab-content">
+                <div class="quests-card">
+                    <div class="section-title">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Statistiques</h3>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-top: 20px; text-align: center;">
+                        Cette section affichera les statistiques détaillées de l'utilisateur.
+                    </p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Fenêtre modale de notification -->
+    <div class="modal-overlay" id="notificationModal">
+        <div class="modal">
+            <div class="modal-header">
+                <i class="fas fa-exclamation-circle"></i>
+                <h3 class="modal-title">NOTICE</h3>
+            </div>
+            <div class="modal-body">
+                <p>Nouvelle quête disponible!</p>
+                <p style="margin-top: 10px; color: var(--accent-blue); font-weight: 600;">
+                    "Terminer le rapport trimestriel"
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Récompense:</strong> +150 XP et objet rare "Plume d'efficacité"
+                </p>
+                <p><strong>Délai:</strong> 3 jours</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-decline" id="declineBtn">
+                    <i class="fas fa-times"></i> DÉCLINER
+                </button>
+                <button class="btn btn-accept" id="acceptBtn">
+                    <i class="fas fa-check"></i> ACCEPTER
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Level Up -->
+    <div class="level-up-notification" id="levelUpNotification">
+        <div class="level-up-text">LEVEL UP!</div>
+        <div class="level-up-details">Niveau 13 atteint!</div>
+    </div>
+
+    <script>
+        // Données de l'application
+        const appData = {
+            playerName: "Alex",
+            level: 12,
+            xp: 75,
+            hp: 82,
+            mp: 40,
+            quests: {
+                quest1: { completed: false, urgent: false },
+                quest2: { completed: true, urgent: false },
+                quest3: { completed: false, urgent: true }
+            }
+        };
+
+        // DOM Elements
+        const tabButtons = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const questCheckboxes = document.querySelectorAll('.quest-checkbox');
+        const notificationModal = document.getElementById('notificationModal');
+        const levelUpNotification = document.getElementById('levelUpNotification');
+        const acceptBtn = document.getElementById('acceptBtn');
+        const declineBtn = document.getElementById('declineBtn');
+
+        // Navigation par onglets
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                
+                // Mettre à jour les boutons d'onglet
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Afficher le contenu de l'onglet sélectionné
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === tabId) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // Gestion des quêtes
+        questCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('click', () => {
+                const questId = checkbox.getAttribute('data-quest');
+                const questItem = document.getElementById(questId);
+                
+                // Si la quête n'est pas déjà complétée
+                if (!checkbox.classList.contains('checked')) {
+                    // Marquer comme complétée
+                    checkbox.classList.add('checked');
+                    questItem.classList.add('completed');
+                    
+                    // Mettre à jour les données
+                    appData.quests[questId].completed = true;
+                    
+                    // Ajouter de l'XP
+                    appData.xp += 10;
+                    if (appData.xp > 100) {
+                        appData.xp = 100;
+                        triggerLevelUp();
+                    }
+                    
+                    // Mettre à jour la barre XP
+                    document.querySelector('.xp-bar').style.width = `${appData.xp}%`;
+                    document.querySelector('.status-value').textContent = `${appData.xp}%`;
+                    
+                    // Augmenter le HP légèrement
+                    appData.hp = Math.min(100, appData.hp + 5);
+                    document.querySelector('.hp-bar').style.width = `${appData.hp}%`;
+                    
+                    // Mettre à jour l'affichage
+                    updateStatusBars();
+                }
+            });
+        });
+
+        // Mettre à jour les jauges de statut
+        function updateStatusBars() {
+            document.querySelector('.hp-bar').style.width = `${appData.hp}%`;
+            document.querySelector('.mp-bar').style.width = `${appData.mp}%`;
+            document.querySelector('.xp-bar').style.width = `${appData.xp}%`;
+            
+            document.querySelectorAll('.status-value').forEach((el, index) => {
+                if (index === 0) el.textContent = `${appData.hp}%`;
+                if (index === 1) el.textContent = `${appData.mp}%`;
+                if (index === 2) el.textContent = `${appData.xp}%`;
+            });
+        }
+
+        // Déclencher un niveau supérieur
+        function triggerLevelUp() {
+            appData.level++;
+            document.querySelector('.player-info p').innerHTML = `Niveau: <span class="highlight">${appData.level}</span>`;
+            
+            // Afficher la notification
+            levelUpNotification.classList.add('active');
+            
+            // Cacher après 2 secondes
+            setTimeout(() => {
+                levelUpNotification.classList.remove('active');
+            }, 2000);
+            
+            // Réinitialiser l'XP
+            appData.xp = 0;
+        }
+
+        // Simuler la consommation d'énergie
+        function simulateEnergyUsage() {
+            if (appData.mp > 0) {
+                appData.mp -= 1;
+                updateStatusBars();
+            }
+            
+            if (appData.hp > 0 && Math.random() > 0.7) {
+                appData.hp -= 1;
+                updateStatusBars();
+            }
+        }
+
+        // Afficher la notification modale
+        function showNotification() {
+            notificationModal.classList.add('active');
+        }
+
+        // Cacher la notification modale
+        function hideNotification() {
+            notificationModal.classList.remove('active');
+        }
+
+        // Gestion des boutons de la modale
+        acceptBtn.addEventListener('click', () => {
+            hideNotification();
+            // Ajouter la nouvelle quête
+            appData.xp += 20;
+            updateStatusBars();
+            
+            // Afficher un message de confirmation
+            alert('Quête acceptée! +20 XP ajoutés.');
+        });
+
+        declineBtn.addEventListener('click', () => {
+            hideNotification();
+            // Réduire légèrement le HP pour refuser une quête
+            appData.hp = Math.max(0, appData.hp - 5);
+            updateStatusBars();
+        });
+
+        // Simuler l'apparition d'une notification après 3 secondes
+        setTimeout(showNotification, 3000);
+
+        // Simuler l'utilisation d'énergie toutes les 10 secondes
+        setInterval(simulateEnergyUsage, 10000);
+
+        // Animation d'apparition des éléments
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animation d'entrée pour les cartes
+            const cards = document.querySelectorAll('.profile-card, .quests-card, .inventory-item');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 + index * 100);
+            });
+            
+            // Mettre à jour l'affichage initial
+            updateStatusBars();
+        });
+
+        // Effets de survol améliorés
+        document.querySelectorAll('.inventory-item, .quest-item, .btn').forEach(element => {
+            element.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            
+            element.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
