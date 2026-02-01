@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système RPG - Red Gate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Palette de couleurs */
+            --bg-primary: #0A0F1E;
+            --bg-secondary: #0A1428;
+            --bg-card: rgba(15, 25, 50, 0.7);
+            --accent-blue: #00C6FF;
+            --accent-blue-dark: #0072FF;
+            --urgent-red: #FF375F;
+            --success-green: #00FF88;
+            --warning-yellow: #FFD700;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0C0;
+            --text-dim: #6B7280;
+            --border-glow: rgba(0, 198, 255, 0.5);
+            --border-glow-strong: rgba(0, 198, 255, 0.8);
+            --transparent-overlay: rgba(10, 20, 40, 0.9);
+            
+            /* Effets */
+            --shadow-glow: 0 0 15px rgba(0, 198, 255, 0.3);
+            --shadow-glow-strong: 0 0 25px rgba(0, 198, 255, 0.5);
+            --shadow-red: 0 0 15px rgba(255, 55, 95, 0.4);
+            --shadow-green: 0 0 15px rgba(0, 255, 136, 0.4);
+            
+            /* Bordures */
+            --border-radius: 4px;
+            --border-radius-lg: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1A1F3E 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 114, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 198, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 55, 95, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Conteneur principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* En-tête avec navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(0, 198, 255, 0.2);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        /* Navigation par onglets */
+        .nav-tabs {
+            display: flex;
+            gap: 5px;
+            background: rgba(10, 20, 40, 0.7);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: var(--border-radius);
+            padding: 5px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+            background: rgba(0, 198, 255, 0.1);
+        }
+
+        .tab.active {
+            background: rgba(0, 198, 255, 0.2);
+            color: var(--accent-blue);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Section principale - Tableau de bord */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Carte de profil */
+        .profile-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--border-radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-dark));
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .player-info h2 {
+            color: var(--accent-blue);
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .player-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Jauges de statut */
+        .status-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .status-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .status-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .status-name {
+            color: var(--text-secondary);
+        }
+
+        .status-value {
+            font-weight: 600;
+        }
+
+        .bar-container {
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bar {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .hp-bar {
+            background: linear-gradient(90deg, var(--success-green), #00CC66);
+            box-shadow: var(--shadow-green);
+        }
+
+        .mp-bar {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-dark));
+            box-shadow: var(--shadow-glow);
+        }
+
+        .xp-bar {
+            background: linear-gradient(90deg, var(--warning-yellow), #FFAA00);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Section des quêtes */
+        .quests-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--border-radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quests-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-blue-dark));
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-title i {
+            font-size: 1.2rem;
+        }
+
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .quest-item {
+            background: rgba(20, 30, 60, 0.5);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            border-left: 3px solid var(--accent-blue);
+            transition: all 0.3s ease;
+        }
+
+        .quest-item:hover {
+            background: rgba(20, 30, 60, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .quest-item.urgent {
+            border-left-color: var(--urgent-red);
+            box-shadow: var(--shadow-red);
+        }
+
+        .quest-item.completed {
+            border-left-color: var(--success-green);
+            box-shadow: var(--shadow-green);
+        }
+
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .quest-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .quest-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--accent-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quest-checkbox.checked {
+            background: var(--success-green);
+            border-color: var(--success-green);
+        }
+
+        .quest-checkbox.checked i {
+            color: var(--bg-primary);
+            font-size: 0.7rem;
+        }
+
+        .quest-checkbox.urgent {
+            border-color: var(--urgent-red);
+        }
+
+        .quest-timer {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--urgent-red);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .quest-details {
+            margin-left: 28px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .quest-reward {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 8px;
+            color: var(--success-green);
+            font-size: 0.85rem;
+        }
+
+        /* Section Scénario RPG */
+        .scenario-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--border-radius-lg);
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scenario-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--urgent-red), #FF0066);
+        }
+
+        .scenario-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 55, 95, 0.3);
+        }
+
+        .scenario-title {
+            color: var(--urgent-red);
+            font-size: 1.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 55, 95, 0.5);
+        }
+
+        .scenario-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-style: italic;
+        }
+
+        .scenario-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .scenario-step {
+            background: rgba(20, 10, 20, 0.5);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            border-left: 3px solid var(--urgent-red);
+        }
+
+        .step-title {
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .step-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .choice-btn {
+            background: rgba(30, 30, 60, 0.7);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: var(--border-radius);
+            padding: 12px 20px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .choice-btn:hover {
+            background: rgba(0, 198, 255, 0.15);
+            border-color: var(--accent-blue);
+            transform: translateX(5px);
+        }
+
+        .choice-btn.urgent {
+            border-color: var(--urgent-red);
+            background: rgba(255, 55, 95, 0.1);
+        }
+
+        .choice-btn.urgent:hover {
+            background: rgba(255, 55, 95, 0.2);
+        }
+
+        .choice-consequence {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--border-radius);
+            border-left: 3px solid var(--success-green);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .choice-consequence.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .scenario-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .status-item-title {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-item-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .status-item-value.negative {
+            color: var(--urgent-red);
+        }
+
+        .status-item-value.positive {
+            color: var(--success-green);
+        }
+
+        /* Combat Interface */
+        .combat-interface {
+            display: none;
+            background: rgba(10, 5, 15, 0.9);
+            border: 2px solid var(--urgent-red);
+            border-radius: var(--border-radius-lg);
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: var(--shadow-red);
+        }
+
+        .combat-interface.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .enemy-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 55, 95, 0.1);
+            border-radius: var(--border-radius);
+        }
+
+        .enemy-name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--urgent-red);
+            text-transform: uppercase;
+        }
+
+        .enemy-hp {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hp-bar-enemy {
+            width: 200px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--urgent-red);
+        }
+
+        .hp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--urgent-red), #FF0066);
+            transition: width 0.5s ease;
+        }
+
+        .combat-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .combat-btn {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-dark));
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .combat-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow-strong);
+        }
+
+        .combat-btn.attack {
+            background: linear-gradient(135deg, var(--urgent-red), #FF0066);
+        }
+
+        .combat-btn.defend {
+            background: linear-gradient(135deg, #6B7280, #4B5563);
+        }
+
+        .combat-btn.special {
+            background: linear-gradient(135deg, var(--warning-yellow), #FFAA00);
+        }
+
+        .combat-log {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .log-entry {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .log-entry.player {
+            color: var(--accent-blue);
+        }
+
+        .log-entry.enemy {
+            color: var(--urgent-red);
+        }
+
+        .log-entry.special {
+            color: var(--warning-yellow);
+        }
+
+        /* Grille d'inventaire */
+        .inventory-section {
+            margin-bottom: 30px;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .inventory-item {
+            aspect-ratio: 1;
+            background: rgba(20, 30, 60, 0.5);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .inventory-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--accent-blue);
+        }
+
+        .inventory-item i {
+            font-size: 1.8rem;
+            color: var(--accent-blue);
+        }
+
+        .inventory-item span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* Boutons */
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-accept {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-dark));
+            color: white;
+        }
+
+        .btn-accept:hover {
+            box-shadow: var(--shadow-glow-strong);
+        }
+
+        .btn-decline {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-decline:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+        }
+
+        /* Notification Level Up */
+        .level-up-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 3px solid var(--success-green);
+            border-radius: var(--border-radius-lg);
+            padding: 40px 60px;
+            z-index: 1001;
+            text-align: center;
+            box-shadow: var(--shadow-green);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .level-up-notification.active {
+            opacity: 1;
+            animation: levelUpAnimation 2s ease;
+        }
+
+        @keyframes levelUpAnimation {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            40% { transform: translate(-50%, -50%) scale(1); }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .level-up-text {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--success-green);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
+            margin-bottom: 15px;
+        }
+
+        .level-up-details {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 0;
+            }
+            
+            .nav-tabs {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .dashboard {
+                gap: 20px;
+            }
+            
+            .combat-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .enemy-hp {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .hp-bar-enemy {
+                width: 150px;
+            }
+            
+            .choice-btn {
+                font-size: 0.85rem;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête avec navigation -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-skull-crossbones"></i>
+                <span>RED GATE RPG</span>
+            </div>
+            
+            <div class="nav-tabs">
+                <button class="tab active" data-tab="dashboard">
+                    <i class="fas fa-home"></i> Tableau de bord
+                </button>
+                <button class="tab" data-tab="scenario">
+                    <i class="fas fa-dungeon"></i> Scénario
+                </button>
+                <button class="tab" data-tab="inventory">
+                    <i class="fas fa-archive"></i> Inventaire
+                </button>
+                <button class="tab" data-tab="quests">
+                    <i class="fas fa-tasks"></i> Quêtes
+                </button>
+                <button class="tab" data-tab="combat">
+                    <i class="fas fa-fist-raised"></i> Combat
+                </button>
+            </div>
+        </header>
+
+        <!-- Section principale -->
+        <main>
+            <!-- Tableau de bord -->
+            <section id="dashboard" class="tab-content active">
+                <div class="dashboard">
+                    <!-- Profil et jauges -->
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="avatar">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div class="player-info">
+                                <h2>Chasseur: Kim Min-jae</h2>
+                                <p>Rang: <span class="highlight" id="playerRank">C</span> | Niveau: <span class="highlight" id="playerLevel">12</span></p>
+                                <p>Titre: <span class="highlight" id="playerTitle">Strike Squad</span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="status-bars">
+                            <div class="status-bar">
+                                <div class="status-label">
+                                    <span class="status-name">HP (Santé)</span>
+                                    <span class="status-value" id="hpValue">100%</span>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar hp-bar" id="hpBar" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="status-bar">
+                                <div class="status-label">
+                                    <span class="status-name">MP (Mana)</span>
+                                    <span class="status-value" id="mpValue">100%</span>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar mp-bar" id="mpBar" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="status-bar">
+                                <div class="status-label">
+                                    <span class="status-name">Stamina</span>
+                                    <span class="status-value" id="staminaValue">100%</span>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar xp-bar" id="staminaBar" style="width: 100%"></div>
+                                </div>
+                            </div>
+
+                            <div class="status-bar">
+                                <div class="status-label">
+                                    <span class="status-name">Fatigue</span>
+                                    <span class="status-value" id="fatigueValue">0%</span>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar" id="fatigueBar" style="width: 0%; background: linear-gradient(90deg, #6B7280, #9CA3AF)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quêtes du scénario -->
+                    <div class="quests-card">
+                        <div class="section-title">
+                            <i class="fas fa-scroll"></i>
+                            <h3>Objectifs du Scénario</h3>
+                        </div>
+                        
+                        <div class="quest-list">
+                            <!-- Objectif 1 -->
+                            <div class="quest-item urgent" id="mainQuest">
+                                <div class="quest-header">
+                                    <div class="quest-title">
+                                        <div class="quest-checkbox urgent" id="mainQuestCheck">
+                                            <i class="fas fa-exclamation"></i>
+                                        </div>
+                                        <span>Échapper de la Red Gate</span>
+                                    </div>
+                                    <div class="quest-timer">
+                                        <i class="fas fa-clock"></i>
+                                        <span id="gateTimer">Temps limité</span>
+                                    </div>
+                                </div>
+                                <div class="quest-details">
+                                    <p>Localiser et éliminer le boss du donjon pour forcer la réouverture de la porte.</p>
+                                    <div class="quest-reward">
+                                        <i class="fas fa-gem"></i>
+                                        <span>Récompense: Pierre Runique rare + Niveaux</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Objectif 2 -->
+                            <div class="quest-item" id="sideQuest1">
+                                <div class="quest-header">
+                                    <div class="quest-title">
+                                        <div class="quest-checkbox" id="sideQuest1Check">
+                                            <i class="fas fa-question"></i>
+                                        </div>
+                                        <span>Survivre au froid extrême</span>
+                                    </div>
+                                </div>
+                                <div class="quest-details">
+                                    <p>Gérer la fatigue accumulée due au climat hostile.</p>
+                                    <div class="quest-reward">
+                                        <i class="fas fa-fire"></i>
+                                        <span>Récompense: Résistance au froid</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Objectif 3 -->
+                            <div class="quest-item" id="sideQuest2">
+                                <div class="quest-header">
+                                    <div class="quest-title">
+                                        <div class="quest-checkbox" id="sideQuest2Check">
+                                            <i class="fas fa-question"></i>
+                                        </div>
+                                        <span>Identifier le traître</span>
+                                    </div>
+                                </div>
+                                <div class="quest-details">
+                                    <p>Découvrir qui parmi les PNJ prévoit de vous trahir.</p>
+                                    <div class="quest-reward">
+                                        <i class="fas fa-eye"></i>
+                                        <span>Récompense: Compétence "Détection"</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section Scénario -->
+                <div class="scenario-section">
+                    <div class="scenario-header">
+                        <h1 class="scenario-title">Le Piège de la Red Gate</h1>
+                        <p class="scenario-subtitle">L'Ombre de la Trahison</p>
+                    </div>
+                    
+                    <div class="scenario-content">
+                        <!-- Étape 1: Contexte -->
+                        <div class="scenario-step">
+                            <h3 class="step-title"><i class="fas fa-map"></i> Contexte</h3>
+                            <p class="step-description">
+                                Votre équipe de chasseurs (Rangs D à C) a été recrutée pour un raid de routine dans une porte de rang C située dans une zone industrielle abandonnée de Séoul. Alors que vous franchissez le portail, celui-ci vire soudainement au rouge sang : une <strong>Red Gate</strong>. Le portail de sortie disparaît, et vous vous retrouvez transportés dans une dimension alternative de forêt enneigée hostile.
+                            </p>
+                        </div>
+                        
+                        <!-- Étape 2: Choix 1 - Gestion de l'éclaireur -->
+                        <div class="scenario-step">
+                            <h3 class="step-title"><i class="fas fa-crosshairs"></i> Choix 1: La gestion de l'éclaireur</h3>
+                            <p class="step-description">
+                                Le groupe doit explorer la forêt rapidement pour trouver le repaire du boss. Que décidez-vous ?
+                            </p>
+                            
+                            <div class="step-choices">
+                                <button class="choice-btn" id="choice1a">
+                                    <i class="fas fa-users"></i> <strong>Option A:</strong> Se séparer en trois équipes pour couvrir plus de terrain
+                                </button>
+                                <div class="choice-consequence" id="consequence1a">
+                                    <strong>Conséquence:</strong> Vous trouvez le repaire plus rapidement, mais l'équipe de rang D est prise en embuscade par des mages Ice Slayers. <span class="negative">-20% HP pour l'équipe</span>.
+                                </div>
+                                
+                                <button class="choice-btn" id="choice1b">
+                                    <i class="fas fa-user-friends"></i> <strong>Option B:</strong> Rester groupé pour plus de sécurité
+                                </button>
+                                <div class="choice-consequence" id="consequence1b">
+                                    <strong>Conséquence:</strong> Vous progressez plus lentement mais en sécurité. <span class="negative">+15% Fatigue</span> due à l'exposition prolongée au froid.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Étape 3: Choix 2 - Éthique du chasseur -->
+                        <div class="scenario-step">
+                            <h3 class="step-title"><i class="fas fa-heartbeat"></i> Choix 2: L'éthique du chasseur</h3>
+                            <p class="step-description">
+                                Un coéquipier PNJ (Lee Ji-hoon, Rang D) est grièvement blessé par un piège de glace. Le soigner consommerait la majeure partie du mana de votre guérisseur.
+                            </p>
+                            
+                            <div class="step-choices">
+                                <button class="choice-btn" id="choice2a">
+                                    <i class="fas fa-hand-holding-medical"></i> <strong>Option A:</strong> Soigner le coéquipier
+                                </button>
+                                <div class="choice-consequence" id="consequence2a">
+                                    <strong>Conséquence:</strong> Vous gagnez un allié fidèle qui vous protégera plus tard. <span class="negative">-60% MP</span> pour le guérisseur.
+                                </div>
+                                
+                                <button class="choice-btn urgent" id="choice2b">
+                                    <i class="fas fa-skull"></i> <strong>Option B:</strong> Suivre la loi du donjon : "Seuls les plus forts survivent"
+                                </button>
+                                <div class="choice-consequence" id="consequence2b">
+                                    <strong>Conséquence:</strong> Vous conservez votre mana pour le combat à venir, mais déclenchez une <span class="negative">Quête Urgente</span> du Système. Les autres PNJ vous regardent avec méfiance.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Étape 4: Choix 3 - Confrontation avec le traître -->
+                        <div class="scenario-step">
+                            <h3 class="step-title"><i class="fas fa-user-secret"></i> Choix 3: La confrontation avec le traître</h3>
+                            <p class="step-description">
+                                Vous découvrez des preuves que le leader de raid (Hwang Dongsuk) prévoit de vous trahir et de s'emparer de vos cristaux de mana une fois le boss affaibli.
+                            </p>
+                            
+                            <div class="step-choices">
+                                <button class="choice-btn urgent" id="choice3a">
+                                    <i class="fas fa-fist-raised"></i> <strong>Option A:</strong> Attaquer le traître en premier
+                                </button>
+                                <div class="choice-consequence" id="consequence3a">
+                                    <strong>Conséquence:</strong> Vous éliminez la menace immédiate, mais devenez des "meurtriers" aux yeux de l'Association. <span class="positive">+30% HP perdu dans le combat</span>.
+                                </div>
+                                
+                                <button class="choice-btn" id="choice3b">
+                                    <i class="fas fa-brain"></i> <strong>Option B:</strong> Attendre qu'il révèle ses intentions
+                                </button>
+                                <div class="choice-consequence" id="consequence3b">
+                                    <strong>Conséquence:</strong> Vous devrez combattre le boss ET les traîtres simultanément. <span class="negative">Difficulté extrême</span> mais justification légale si vous survivez.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Statut du scénario -->
+                        <div class="scenario-status">
+                            <div class="status-item">
+                                <div class="status-item-title">
+                                    <i class="fas fa-snowflake"></i>
+                                    <span>Température:</span>
+                                </div>
+                                <div class="status-item-value negative" id="temperatureValue">-25°C</div>
+                            </div>
+                            
+                            <div class="status-item">
+                                <div class="status-item-title">
+                                    <i class="fas fa-user-friends"></i>
+                                    <span>Alliés restants:</span>
+                                </div>
+                                <div class="status-item-value" id="alliesValue">4/6</div>
+                            </div>
+                            
+                            <div class="status-item">
+                                <div class="status-item-title">
+                                    <i class="fas fa-gem"></i>
+                                    <span>Cristaux de mana:</span>
+                                </div>
+                                <div class="status-item-value" id="crystalsValue">3</div>
+                            </div>
+                            
+                            <div class="status-item">
+                                <div class="status-item-title">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Réputation:</span>
+                                </div>
+                                <div class="status-item-value" id="reputationValue">Neutre</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section Combat -->
+            <section id="combat" class="tab-content">
+                <div class="scenario-section">
+                    <div class="scenario-header">
+                        <h1 class="scenario-title">Interface de Combat</h1>
+                        <p class="scenario-subtitle">Affrontez le boss de la Red Gate</p>
+                    </div>
+                    
+                    <!-- Interface de combat -->
+                    <div class="combat-interface" id="combatInterface">
+                        <div class="enemy-stats">
+                            <div class="enemy-name" id="enemyName">Commandant Igris le Rouge</div>
+                            <div class="enemy-hp">
+                                <span>HP:</span>
+                                <div class="hp-bar-enemy">
+                                    <div class="hp-bar-fill" id="enemyHpBar" style="width: 100%"></div>
+                                </div>
+                                <span id="enemyHpValue">100%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="combat-actions">
+                            <button class="combat-btn attack" id="attackBtn">
+                                <i class="fas fa-sword"></i>
+                                <span>Attaque de base</span>
+                                <small>Dégâts: 15-25</small>
+                            </button>
+                            
+                            <button class="combat-btn" id="skillBtn">
+                                <i class="fas fa-bolt"></i>
+                                <span>Compétence spéciale</span>
+                                <small>Coût: 20 MP</small>
+                            </button>
+                            
+                            <button class="combat-btn defend" id="defendBtn">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Défense</span>
+                                <small>Réduction: 50% dégâts</small>
+                            </button>
+                            
+                            <button class="combat-btn special" id="ultimateBtn">
+                                <i class="fas fa-fire"></i>
+                                <span>Ultime</span>
+                                <small>Coût: 50 MP | Délai: 3 tours</small>
+                            </button>
+                        </div>
+                        
+                        <div class="combat-log" id="combatLog">
+                            <div class="log-entry">Le combat commence!</div>
+                            <div class="log-entry enemy">Commandant Igris se prépare à attaquer...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Message si combat non disponible -->
+                    <div id="noCombatMessage" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 20px; color: var(--warning-yellow);"></i>
+                        <h3 style="color: var(--accent-blue); margin-bottom: 15px;">Combat non disponible</h3>
+                        <p>Vous devez d'abord progresser dans le scénario jusqu'à la confrontation avec le boss.</p>
+                        <p>Rendez-vous dans l'onglet "Scénario" pour faire avancer l'histoire.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Autres sections -->
+            <section id="inventory" class="tab-content">
+                <div class="quests-card">
+                    <div class="section-title">
+                        <i class="fas fa-archive"></i>
+                        <h3>Inventaire complet</h3>
+                    </div>
+                    
+                    <div class="inventory-grid">
+                        <div class="inventory-item" data-item="potion">
+                            <i class="fas fa-flask"></i>
+                            <span>Potion de soin</span>
+                            <small>x3</small>
+                        </div>
+                        <div class="inventory-item" data-item="mana">
+                            <i class="fas fa-wine-bottle"></i>
+                            <span>Élixir de mana</span>
+                            <small>x2</small>
+                        </div>
+                        <div class="inventory-item" data-item="crystal">
+                            <i class="fas fa-gem"></i>
+                            <span>Cristal de mana</span>
+                            <small>x3</small>
+                        </div>
+                        <div class="inventory-item" data-item="armor">
+                            <i class="fas fa-vest"></i>
+                            <span>Armure légère</span>
+                            <small>Équipé</small>
+                        </div>
+                        <div class="inventory-item" data-item="weapon">
+                            <i class="fas fa-sword"></i>
+                            <span>Épée d'acier</span>
+                            <small>Équipé</small>
+                        </div>
+                        <div class="inventory-item" data-item="rune">
+                            <i class="fas fa-rune"></i>
+                            <span>Pierre runique</span>
+                            <small>Verrouillée</small>
+                        </div>
+                        <div class="inventory-item" data-item="map">
+                            <i class="fas fa-map"></i>
+                            <span>Carte du donjon</span>
+                            <small>Incomplet</small>
+                        </div>
+                        <div class="inventory-item" data-item="empty">
+                            <i class="fas fa-plus"></i>
+                            <span>Emplacement vide</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="quests" class="tab-content">
+                <div class="quests-card">
+                    <div class="section-title">
+                        <i class="fas fa-tasks"></i>
+                        <h3>Journal de quêtes</h3>
+                    </div>
+                    <div style="color: var(--text-secondary); margin-top: 20px; padding: 20px; text-align: center;">
+                        <i class="fas fa-book-open" style="font-size: 2rem; margin-bottom: 15px; color: var(--accent-blue);"></i>
+                        <h4 style="color: var(--accent-blue); margin-bottom: 10px;">Journal du chasseur</h4>
+                        <p>Cette section enregistrera toutes vos quêtes et accomplissements.</p>
+                        <p>Revenez après avoir progressé dans le scénario.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Notification Level Up -->
+    <div class="level-up-notification" id="levelUpNotification">
+        <div class="level-up-text">LEVEL UP!</div>
+        <div class="level-up-details" id="levelUpDetails">Niveau 13 atteint!</div>
+    </div>
+
+    <script>
+        // État du jeu
+        const gameState = {
+            // Statuts du joueur
+            player: {
+                name: "Kim Min-jae",
+                rank: "C",
+                level: 12,
+                title: "Strike Squad",
+                hp: 100,
+                maxHp: 100,
+                mp: 100,
+                maxMp: 100,
+                stamina: 100,
+                maxStamina: 100,
+                fatigue: 0,
+                crystals: 3,
+                reputation: "Neutre"
+            },
+            
+            // Scénario
+            scenario: {
+                step: 1,
+                choices: {
+                    choice1: null, // A ou B
+                    choice2: null, // A ou B
+                    choice3: null  // A ou B
+                },
+                allies: 6,
+                temperature: -25,
+                bossFound: false,
+                traitorRevealed: false
+            },
+            
+            // Combat
+            combat: {
+                active: false,
+                enemy: {
+                    name: "Commandant Igris le Rouge",
+                    hp: 100,
+                    maxHp: 100,
+                    attacks: ["Frappe glaciale", "Tempête de neige", "Lance de glace"],
+                    difficulty: "Difficile"
+                },
+                turn: 0,
+                log: []
+            },
+            
+            // Inventaire
+            inventory: {
+                potion: 3,
+                manaPotion: 2,
+                crystals: 3,
+                armor: true,
+                weapon: true,
+                rune: false,
+                map: false
+            }
+        };
+
+        // DOM Elements
+        const tabButtons = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const choiceButtons = document.querySelectorAll('.choice-btn');
+        const combatInterface = document.getElementById('combatInterface');
+        const noCombatMessage = document.getElementById('noCombatMessage');
+        const combatButtons = {
+            attack: document.getElementById('attackBtn'),
+            skill: document.getElementById('skillBtn'),
+            defend: document.getElementById('defendBtn'),
+            ultimate: document.getElementById('ultimateBtn')
+        };
+        const combatLog = document.getElementById('combatLog');
+        const levelUpNotification = document.getElementById('levelUpNotification');
+        const levelUpDetails = document.getElementById('levelUpDetails');
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUI();
+            startFatigueSystem();
+            initializeChoiceButtons();
+            initializeCombatButtons();
+            
+            // Afficher la section combat si le scénario est suffisamment avancé
+            if (gameState.scenario.bossFound) {
+                combatInterface.classList.add('active');
+                noCombatMessage.style.display = 'none';
+            } else {
+                combatInterface.classList.remove('active');
+                noCombatMessage.style.display = 'block';
+            }
+            
+            // Animation d'entrée
+            animateEntrance();
+        });
+
+        // Navigation par onglets
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                
+                // Mettre à jour les boutons d'onglet
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Afficher le contenu de l'onglet sélectionné
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === tabId) {
+                        content.classList.add('active');
+                        
+                        // Gestion spéciale pour l'onglet combat
+                        if (tabId === 'combat') {
+                            if (gameState.scenario.bossFound) {
+                                combatInterface.classList.add('active');
+                                noCombatMessage.style.display = 'none';
+                            } else {
+                                combatInterface.classList.remove('active');
+                                noCombatMessage.style.display = 'block';
+                            }
+                        }
+                    }
+                });
+            });
+        });
+
+        // Initialisation des boutons de choix
+        function initializeChoiceButtons() {
+            choiceButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const choiceId = this.id;
+                    const consequenceId = 'consequence' + choiceId.replace('choice', '');
+                    const consequenceElement = document.getElementById(consequenceId);
+                    
+                    // Masquer toutes les conséquences de cette étape
+                    const stepChoices = this.closest('.step-choices');
+                    stepChoices.querySelectorAll('.choice-consequence').forEach(c => {
+                        c.classList.remove('show');
+                    });
+                    
+                    // Afficher la conséquence de ce choix
+                    if (consequenceElement) {
+                        consequenceElement.classList.add('show');
+                    }
+                    
+                    // Traiter le choix
+                    processChoice(choiceId);
+                    
+                    // Désactiver tous les boutons de cette étape
+                    stepChoices.querySelectorAll('.choice-btn').forEach(btn => {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.6';
+                        btn.style.cursor = 'not-allowed';
+                    });
+                });
+            });
+        }
+
+        // Traitement des choix
+        function processChoice(choiceId) {
+            switch(choiceId) {
+                case 'choice1a':
+                    // Se séparer en équipes
+                    gameState.scenario.choices.choice1 = 'A';
+                    gameState.player.hp = Math.max(0, gameState.player.hp - 20);
+                    gameState.scenario.allies -= 2; // Perte d'alliés
+                    updateQuestStatus('sideQuest1', true);
+                    addCombatLog("L'équipe de rang D a été prise en embuscade par des Ice Slayers!", "enemy");
+                    break;
+                    
+                case 'choice1b':
+                    // Rester groupé
+                    gameState.scenario.choices.choice1 = 'B';
+                    gameState.player.fatigue = Math.min(100, gameState.player.fatigue + 15);
+                    gameState.scenario.temperature = -30; // Plus froid
+                    updateQuestStatus('sideQuest1', true);
+                    addCombatLog("Vous progressez lentement mais en sécurité. La fatigue s'accumule.", "player");
+                    break;
+                    
+                case 'choice2a':
+                    // Soigner le coéquipier
+                    gameState.scenario.choices.choice2 = 'A';
+                    gameState.player.mp = Math.max(0, gameState.player.mp - 60);
+                    gameState.scenario.allies += 1; // Allié fidèle
+                    gameState.player.reputation = "Héroïque";
+                    addCombatLog("Vous avez sauvé Lee Ji-hoon. Il vous jure fidélité.", "player");
+                    break;
+                    
+                case 'choice2b':
+                    // Abandonner le coéquipier
+                    gameState.scenario.choices.choice2 = 'B';
+                    gameState.player.reputation = "Ruthless";
+                    gameState.scenario.allies -= 1;
+                    document.getElementById('mainQuest').classList.add('urgent');
+                    addCombatLog("Vous avez abandonné un coéquipier. Le Système vous surveille...", "enemy");
+                    break;
+                    
+                case 'choice3a':
+                    // Attaquer le traître en premier
+                    gameState.scenario.choices.choice3 = 'A';
+                    gameState.player.hp = Math.max(0, gameState.player.hp - 30);
+                    gameState.scenario.allies -= 1; // Le traître
+                    gameState.scenario.traitorRevealed = true;
+                    gameState.player.reputation = "Outlaw";
+                    updateQuestStatus('sideQuest2', true);
+                    addCombatLog("Vous avez éliminé Hwang Dongsuk le traître!", "player");
+                    break;
+                    
+                case 'choice3b':
+                    // Attendre que le traître agisse
+                    gameState.scenario.choices.choice3 = 'B';
+                    gameState.scenario.traitorRevealed = true;
+                    gameState.player.reputation = "Justicier";
+                    updateQuestStatus('sideQuest2', true);
+                    addCombatLog("Vous avez exposé le traître devant tous. Préparez-vous à un combat difficile.", "special");
+                    break;
+            }
+            
+            // Vérifier si le boss peut être trouvé
+            if (gameState.scenario.choices.choice1 && gameState.scenario.choices.choice2) {
+                gameState.scenario.bossFound = true;
+                updateQuestStatus('mainQuest', true);
+                addCombatLog("Vous avez trouvé le repaire du boss! Préparez-vous au combat final.", "special");
+                
+                // Activer l'interface de combat
+                combatInterface.classList.add('active');
+                noCombatMessage.style.display = 'none';
+            }
+            
+            updateUI();
+        }
+
+        // Initialisation des boutons de combat
+        function initializeCombatButtons() {
+            combatButtons.attack.addEventListener('click', () => performAttack('basic'));
+            combatButtons.skill.addEventListener('click', () => performAttack('skill'));
+            combatButtons.defend.addEventListener('click', () => performDefense());
+            combatButtons.ultimate.addEventListener('click', () => performUltimate());
+        }
+
+        // Exécuter une attaque
+        function performAttack(type) {
+            if (!gameState.combat.active) {
+                gameState.combat.active = true;
+                gameState.combat.turn = 1;
+                addCombatLog("Le combat contre " + gameState.combat.enemy.name + " commence!", "special");
+            }
+            
+            let playerDamage = 0;
+            let mpCost = 0;
+            
+            switch(type) {
+                case 'basic':
+                    playerDamage = Math.floor(Math.random() * 11) + 15; // 15-25
+                    addCombatLog(`Vous attaquez et infligez ${playerDamage} dégâts!`, "player");
+                    break;
+                    
+                case 'skill':
+                    if (gameState.player.mp >= 20) {
+                        mpCost = 20;
+                        playerDamage = Math.floor(Math.random() * 16) + 30; // 30-45
+                        gameState.player.mp -= mpCost;
+                        addCombatLog(`Vous utilisez une compétence spéciale! ${playerDamage} dégâts! (-20 MP)`, "player");
+                    } else {
+                        addCombatLog("Pas assez de MP pour utiliser cette compétence!", "enemy");
+                        return;
+                    }
+                    break;
+            }
+            
+            // Appliquer les dégâts à l'ennemi
+            gameState.combat.enemy.hp = Math.max(0, gameState.combat.enemy.hp - playerDamage);
+            
+            // Vérifier si l'ennemi est vaincu
+            if (gameState.combat.enemy.hp <= 0) {
+                endCombat(true);
+                return;
+            }
+            
+            // Tour de l'ennemi
+            enemyTurn();
+            
+            updateUI();
+        }
+
+        // Exécuter une défense
+        function performDefense() {
+            addCombatLog("Vous vous mettez en position défensive. Réduction des dégâts de 50% au prochain tour.", "player");
+            
+            // Le prochain tour, les dégâts seront réduits (implémenté dans enemyTurn)
+            gameState.player.defending = true;
+            
+            // Tour de l'ennemi
+            enemyTurn();
+            
+            updateUI();
+        }
+
+        // Exécuter l'attaque ultime
+        function performUltimate() {
+            if (gameState.player.mp >= 50) {
+                gameState.player.mp -= 50;
+                const ultimateDamage = 80 + Math.floor(Math.random() * 21); // 80-100
+                gameState.combat.enemy.hp = Math.max(0, gameState.combat.enemy.hp - ultimateDamage);
+                
+                addCombatLog(`ULTIME! Vous infligez ${ultimateDamage} dégâts dévastateurs!`, "special");
+                
+                // Vérifier si l'ennemi est vaincu
+                if (gameState.combat.enemy.hp <= 0) {
+                    endCombat(true);
+                    return;
+                }
+                
+                // Tour de l'ennemi
+                enemyTurn();
+                
+                updateUI();
+            } else {
+                addCombatLog("Pas assez de MP pour l'attaque ultime! (50 MP requis)", "enemy");
+            }
+        }
+
+        // Tour de l'ennemi
+        function enemyTurn() {
+            gameState.combat.turn++;
+            
+            // Choix d'attaque aléatoire
+            const attackIndex = Math.floor(Math.random() * gameState.combat.enemy.attacks.length);
+            const attackName = gameState.combat.enemy.attacks[attackIndex];
+            
+            // Dégâts de base de l'ennemi
+            let enemyDamage = Math.floor(Math.random() * 16) + 20; // 20-35
+            
+            // Réduction si le joueur se défend
+            if (gameState.player.defending) {
+                enemyDamage = Math.floor(enemyDamage * 0.5);
+                gameState.player.defending = false;
+                addCombatLog(`Vous vous défendez! ${attackName} inflige ${enemyDamage} dégâts (réduits de 50%).`, "enemy");
+            } else {
+                addCombatLog(`${gameState.combat.enemy.name} utilise ${attackName} et inflige ${enemyDamage} dégâts!`, "enemy");
+            }
+            
+            // Appliquer les dégâts au joueur
+            gameState.player.hp = Math.max(0, gameState.player.hp - enemyDamage);
+            
+            // Vérifier si le joueur est vaincu
+            if (gameState.player.hp <= 0) {
+                endCombat(false);
+                return;
+            }
+            
+            // Augmenter la fatigue pendant le combat
+            gameState.player.fatigue = Math.min(100, gameState.player.fatigue + 5);
+            
+            updateUI();
+        }
+
+        // Terminer le combat
+        function endCombat(playerWon) {
+            gameState.combat.active = false;
+            
+            if (playerWon) {
+                addCombatLog(`VICTOIRE! Vous avez vaincu ${gameState.combat.enemy.name}!`, "special");
+                addCombatLog("La Red Gate commence à s'ouvrir...", "special");
+                
+                // Récompenses
+                gameState.player.level += 2;
+                gameState.inventory.rune = true;
+                gameState.inventory.crystals += 5;
+                
+                // Afficher notification level up
+                levelUpDetails.textContent = `Niveau ${gameState.player.level} atteint! Pierre Runique obtenue!`;
+                levelUpNotification.classList.add('active');
+                
+                setTimeout(() => {
+                    levelUpNotification.classList.remove('active');
+                }, 2000);
+                
+                // Mettre à jour le titre en fonction de la réputation
+                if (gameState.player.reputation === "Outlaw") {
+                    gameState.player.title = "Wolf Assassin";
+                } else if (gameState.player.reputation === "Justicier") {
+                    gameState.player.title = "Monarch of Shadows";
+                }
+                
+            } else {
+                addCombatLog("DÉFAITE... Vous avez été vaincu par " + gameState.combat.enemy.name, "enemy");
+                addCombatLog("GAME OVER - Rechargez la page pour recommencer", "enemy");
+                
+                // Désactiver tous les boutons
+                Object.values(combatButtons).forEach(btn => {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                });
+            }
+            
+            updateUI();
+        }
+
+        // Système de fatigue
+        function startFatigueSystem() {
+            setInterval(() => {
+                if (gameState.combat.active) return; // Ne pas augmenter pendant le combat
+                
+                gameState.player.fatigue = Math.min(100, gameState.player.fatigue + 1);
+                
+                // Effets de la fatigue
+                if (gameState.player.fatigue >= 50) {
+                    gameState.player.stamina = Math.max(0, gameState.player.stamina - 1);
+                }
+                
+                if (gameState.player.fatigue >= 75) {
+                    gameState.player.hp = Math.max(0, gameState.player.hp - 1);
+                }
+                
+                // Mettre à jour la température (variation aléatoire)
+                const tempChange = Math.floor(Math.random() * 3) - 1; // -1, 0, ou 1
+                gameState.scenario.temperature += tempChange;
+                
+                updateUI();
+            }, 10000); // Toutes les 10 secondes
+        }
+
+        // Mettre à jour l'interface
+        function updateUI() {
+            // Mettre à jour les barres de statut
+            document.getElementById('hpValue').textContent = `${gameState.player.hp}%`;
+            document.getElementById('hpBar').style.width = `${gameState.player.hp}%`;
+            
+            document.getElementById('mpValue').textContent = `${gameState.player.mp}%`;
+            document.getElementById('mpBar').style.width = `${gameState.player.mp}%`;
+            
+            document.getElementById('staminaValue').textContent = `${gameState.player.stamina}%`;
+            document.getElementById('staminaBar').style.width = `${gameState.player.stamina}%`;
+            
+            document.getElementById('fatigueValue').textContent = `${gameState.player.fatigue}%`;
+            document.getElementById('fatigueBar').style.width = `${gameState.player.fatigue}%`;
+            
+            // Mettre à jour les informations du joueur
+            document.getElementById('playerRank').textContent = gameState.player.rank;
+            document.getElementById('playerLevel').textContent = gameState.player.level;
+            document.getElementById('playerTitle').textContent = gameState.player.title;
+            
+            // Mettre à jour le statut du scénario
+            document.getElementById('temperatureValue').textContent = `${gameState.scenario.temperature}°C`;
+            document.getElementById('alliesValue').textContent = `${gameState.scenario.allies}/6`;
+            document.getElementById('crystalsValue').textContent = gameState.inventory.crystals;
+            document.getElementById('reputationValue').textContent = gameState.player.reputation;
+            
+            // Mettre à jour le combat
+            if (gameState.combat.active) {
+                const enemyHpPercent = (gameState.combat.enemy.hp / gameState.combat.enemy.maxHp) * 100;
+                document.getElementById('enemyHpBar').style.width = `${enemyHpPercent}%`;
+                document.getElementById('enemyHpValue').textContent = `${Math.round(enemyHpPercent)}%`;
+            }
+            
+            // Mettre à jour le timer de la porte
+            const minutes = Math.floor(gameState.player.fatigue / 10);
+            document.getElementById('gateTimer').textContent = `${60 - minutes}min restantes`;
+            
+            // Changer la couleur de la température
+            const tempElement = document.getElementById('temperatureValue');
+            if (gameState.scenario.temperature < -30) {
+                tempElement.className = 'status-item-value negative';
+            } else if (gameState.scenario.temperature > -15) {
+                tempElement.className = 'status-item-value positive';
+            } else {
+                tempElement.className = 'status-item-value';
+            }
+        }
+
+        // Mettre à jour le statut des quêtes
+        function updateQuestStatus(questId, inProgress) {
+            const questElement = document.getElementById(questId);
+            const checkElement = document.getElementById(questId + 'Check');
+            
+            if (inProgress) {
+                questElement.classList.add('completed');
+                if (checkElement) {
+                    checkElement.classList.add('checked');
+                }
+            }
+        }
+
+        // Ajouter une entrée au journal de combat
+        function addCombatLog(message, type = "player") {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[Tour ${gameState.combat.turn}] ${message}`;
+            
+            combatLog.appendChild(logEntry);
+            
+            // Limiter le nombre d'entrées
+            if (combatLog.children.length > 10) {
+                combatLog.removeChild(combatLog.firstChild);
+            }
+            
+            // Faire défiler vers le bas
+            combatLog.scrollTop = combatLog.scrollHeight;
+        }
+
+        // Animation d'entrée
+        function animateEntrance() {
+            const elements = document.querySelectorAll('.profile-card, .quests-card, .scenario-section, .inventory-item');
+            elements.forEach((element, index) => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, 100 + index * 100);
+            });
+        }
+
+        // Effets de survol améliorés
+        document.querySelectorAll('.inventory-item, .choice-btn, .combat-btn').forEach(element => {
+            element.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            
+            element.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
